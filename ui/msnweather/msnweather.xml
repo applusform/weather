@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Created by ApplusForm.com on 2014.3.26
+
+	Permission is granted to copy, distribute, modify under the terms of ApplusForm License.
+
+	Copyright (C) 2014 ApplusForm.com. All rights reserved.
+-->
+<MOML version="1.1.5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.applusform.com/xsd/moml_ui.xsd">
+	<UILAYOUT portrait="300,300" landscape="300,300">
+		<WINDOW id="icon" layout="0,0,300,200" />
+		<LABEL id="temperature" layout="0,200,300,100" fontSize="100" textAlign="center"/>
+	</UILAYOUT>
+
+	<CMD cmd="function.updateByCountry" />
+	<CMD cmd="function.updateByGps" />
+
+	<FUNCTION id="updateByCountry" >
+		<CMD cmd="url = 'http://weather.service.msn.com/data.aspx?weadegreetype=C&amp;culture=' + device.os.language + '-' + device.os.country" />
+		<CMD cmd="xml = file.read(url)" />
+		<CMD cmd="celsius = xpath.evaluateEx(xml, '/weatherdata /weather/current/@temperature')" />
+		<CMD cmd="temperature.text = celsius + ' °C'" />
+		<CMD cmd ="icon = xpath.evaluateEx(xml, '/weatherdata /weather/current/@skycode')" />
+		<CMD cmd="icon.img = xpath.evaluateEx(xml, '/weatherdata /weather/@imagerelativeurl') + icon + '.gif'" />
+	</FUNCTION>
+
+	<FUNCTION id="updateByGps" >
+		<CMD cmd="device.gps.addEventListener('onChange', 'function.onGpsChange')" />
+		<CMD cmd="device.gps.start"/>
+	</FUNCTION>
+	
+	<FUNCTION id="onGpsChange(latitude, longitude)">
+		<RETURN condition="latitude == 0 and longigude == 0"/>
+		<CMD cmd="saveVariable.lastLatitude = latitude"/>
+		<CMD cmd="saveVariable.lastLongitude = longitude"/>
+		<CMD cmd="url = 'http://weather.service.msn.com/data.aspx?weadegreetype=C&amp;culture=en-US&amp;weasearchstr=' + latitude + ',' + longitude" />
+		<CMD cmd="device.gps.removeEventListener('onChange', 'function.onGpsChange')" />
+		<CMD cmd="xml = file.read(url)" />
+		<CMD cmd="celsius = xpath.evaluateEx(xml, '/weatherdata /weather/current/@temperature')" />
+		<CMD cmd="temperature.text = celsius + ' °C'" />
+		<CMD cmd ="icon = xpath.evaluateEx(xml, '/weatherdata /weather/current/@skycode')" />
+		<CMD cmd="icon.img = xpath.evaluateEx(xml, '/weatherdata /weather/@imagerelativeurl') + icon + '.gif'" />
+	</FUNCTION>
+</MOML>
