@@ -7,20 +7,33 @@
 	Copyright (C) 2014 ApplusForm.com. All rights reserved.
 -->
 <MOML version="1.1.5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.applusform.com/xsd/moml_ui_1.1.8.xsd">
-	<UILAYOUT portrait="300,300" landscape="300,300">
-		<WINDOW id="icon" layout="50,0,200,200" />
-		<LABEL id="temperature" layout="0,200,300,100" fontSize="100" textAlign="center"/>
+	<UILAYOUT portrait="400,200" landscape="400,200">
+		<WINDOW id="icon" layout="0,0,150,150" />
+		<LABEL id="temperature" layout="0,150,150,50" fontSize="50" textAlign="center"/>
+		<LABEL id="desc" layout="200,30,180,50" fontSize="45" textAlign="center"/>
+		<LABEL id="time" layout="200,120,180,30" fontSize="30" textAlign="right|bottom"/>
+		<LABEL id="latlon" layout="200,160,180,30" fontSize="30" textAlign="right|bottom"/>
 	</UILAYOUT>
 
 	<CMD cmd="function.updateByCountry" />
-	<CMD cmd="function.updateByGps" />
+	<CMD cmd="function.updateByGps" delay="1000"/>
 
 	<FUNCTION id="updateByCountry" >
 		<CMD cmd="url = 'http://api.openweathermap.org/data/2.5/weather?mode=xml&amp;q=,' + device.os.country" />
-		<CMD cmd="xml = file.read(url)" />
+		<CMD cmd="file.read(url, 'function.parse')"/>
+	</FUNCTION>
+
+	<FUNCTION id="parse(xml)" >
 		<CMD cmd="kelvin = xpath.evaluateEx(xml, '/current/temperature/@value')" />
 		<CMD cmd="celsius = string.format('%.0f', kelvin-273.15)" />
 		<CMD cmd="temperature.text = celsius + ' °C'" />
+		<CMD cmd="latlon.text = xpath.evaluateEx(xml, '/current/city/coord/@lat') + ', '+xpath.evaluateEx(xml, '/current/city/coord/@lon')" />
+		<CMD cmd="lastupdate = xpath.evaluateEx(xml, '/current/lastupdate/@value')" />
+		<!-- GMT -->
+		<CMD cmd="date.format='yyyy-mm-dd\'T\'HH:mm:ssZ'" />
+		<CMD cmd="time.text = date.getFormatDate(lastupdate+'+0000', 'HH:mm:ss')" />
+		<!-- GMT to Local time -->
+		<CMD cmd="desc.text = xpath.evaluateEx(xml, '/current/weather/@value')" />
 		<CMD cmd="iconName = xpath.evaluateEx(xml, '/current/weather/@icon')" />
 		<CMD cmd="icon.img = 'http://openweathermap.org/img/w/' + iconName + '.png'" />
 	</FUNCTION>
@@ -32,15 +45,8 @@
 
 	<FUNCTION id="onGpsChange(latitude, longitude)">
 		<RETURN condition="latitude == 0 and longitude == 0"/>
-		<CMD cmd="saveVariable.lastLatitude = latitude"/>
-		<CMD cmd="saveVariable.lastLongitude = longitude"/>
-		<CMD cmd="url = 'http://api.openweathermap.org/data/2.5/weather?mode=xml&amp;lat=' + latitude + '&amp;lon=' + longitude" />
 		<CMD cmd="device.gps.removeEventListener('onChange', 'function.onGpsChange')" />
-		<CMD cmd="xml = file.read(url)" />
-		<CMD cmd="kelvin = xpath.evaluateEx(xml, '/current/temperature/@value')" />
-		<CMD cmd="celsius = string.format('%.0f', kelvin-273.15)" />
-		<CMD cmd="temperature.text = celsius + ' °C'" />
-		<CMD cmd ="icon = xpath.evaluateEx(xml, '/current/weather/@icon')" />
-		<CMD cmd="icon.img = 'http://openweathermap.org/img/w/' + icon + '.png'" />
+		<CMD cmd="url = 'http://api.openweathermap.org/data/2.5/weather?mode=xml&amp;lat=' + latitude + '&amp;lon=' + longitude" />
+		<CMD cmd="file.read(url, 'function.parse')"/>
 	</FUNCTION>
 </MOML>

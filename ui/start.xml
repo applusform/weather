@@ -15,11 +15,11 @@
         <WINDOW layout="0,0,720,1230" img="#ffffff"/>
         <WINDOW layout="50,50,620,1130" align="linear:vertical">
             <LABEL layout="620,100" textAlign="bottom" text="http://openweathermap.org/api" />
-            <CONTAINER layout="100,100" src="openweathermap/openweathermap.xml" align="relative" img="#110000ff"/>
+            <CONTAINER layout="400,200" src="openweathermap/openweathermap.xml" align="relative" img="#110000ff"/>
             <LABEL layout="620,100" textAlign="bottom" text="http://weather.service.msn.com" />
-            <CONTAINER layout="100,100" src="msnweather/msnweather.xml" align="relative" img="#110000ff"/>
+            <CONTAINER layout="400,200" src="msnweather/msnweather.xml" align="relative" img="#110000ff"/>
             <LABEL layout="620,100" textAlign="bottom" text="https://developer.yahoo.com/weather" />
-            <CONTAINER layout="100,100" src="yahooweather/yahooweather.xml" align="relative" img="#110000ff"/>
+            <CONTAINER layout="400,200" src="yahooweather/yahooweather.xml" align="relative" img="#110000ff"/>
         </WINDOW>
     </UILAYOUT>
 
