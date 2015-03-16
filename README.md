@@ -2,7 +2,7 @@
 Open API - weather
 
 Screen shot :
-![Screen shot](http://applusform.github.io/weather/screenShot.png)
+![Screen shot](http://applusform.github.io/weather/screenshot.png)
 
 -
 ##### How to test this?
