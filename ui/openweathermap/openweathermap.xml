@@ -1,14 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
-	Created by ApplusForm.com on 2014.3.26
+	Created by ApplusForm.com on 2015.2.25
 
 	Permission is granted to copy, distribute, modify under the terms of ApplusForm License.
 
 	Copyright (C) 2014 ApplusForm.com. All rights reserved.
 -->
-<MOML version="1.1.5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.applusform.com/xsd/moml_ui_1.1.8.xsd">
+<MOML version="1.1.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.applusform.com/xsd/moml_ui_1.1.8.xsd">
 	<UILAYOUT portrait="400,200" landscape="400,200">
-		<WINDOW id="icon" layout="0,0,150,150" />
+		<WINDOW layout="0,0,400,200" defaultImg="#ffffff"/>
+		<WINDOW layout="0,0,150,150" align="linear:center">
+			<WINDOW id="icon" layout="150sr,150sr" />
+		</WINDOW>
 		<LABEL id="temperature" layout="0,150,150,50" fontSize="50" textAlign="center"/>
 		<LABEL id="desc" layout="200,30,180,50" fontSize="45" textAlign="center"/>
 		<LABEL id="time" layout="200,120,180,30" fontSize="30" textAlign="right|bottom"/>
@@ -19,13 +22,12 @@
 	<CMD cmd="function.updateByGps" delay="1000"/>
 
 	<FUNCTION id="updateByCountry" >
-		<CMD cmd="url = 'http://api.openweathermap.org/data/2.5/weather?mode=xml&amp;q=,' + device.os.country" />
+		<CMD cmd="url = 'http://api.openweathermap.org/data/2.5/weather?mode=xml&amp;units=metric&amp;q=,' + device.os.country" />
 		<CMD cmd="file.read(url, 'function.parse')"/>
 	</FUNCTION>
 
 	<FUNCTION id="parse(xml)" >
-		<CMD cmd="kelvin = xpath.evaluateEx(xml, '/current/temperature/@value')" />
-		<CMD cmd="celsius = string.format('%.0f', kelvin-273.15)" />
+		<CMD cmd="celsius = string.format('%d', xpath.evaluateEx(xml, '/current/temperature/@value'))" />
 		<CMD cmd="temperature.text = celsius + ' °C'" />
 		<CMD cmd="latlon.text = xpath.evaluateEx(xml, '/current/city/coord/@lat') + ', '+xpath.evaluateEx(xml, '/current/city/coord/@lon')" />
 		<CMD cmd="lastupdate = xpath.evaluateEx(xml, '/current/lastupdate/@value')" />
@@ -46,7 +48,7 @@
 	<FUNCTION id="onGpsChange(latitude, longitude)">
 		<RETURN condition="latitude == 0 and longitude == 0"/>
 		<CMD cmd="device.gps.removeEventListener('onChange', 'function.onGpsChange')" />
-		<CMD cmd="url = 'http://api.openweathermap.org/data/2.5/weather?mode=xml&amp;lat=' + latitude + '&amp;lon=' + longitude" />
+		<CMD cmd="url = 'http://api.openweathermap.org/data/2.5/weather?mode=xml&amp;units=metric&amp;lat=' + latitude + '&amp;lon=' + longitude" />
 		<CMD cmd="file.read(url, 'function.parse')"/>
 	</FUNCTION>
 </MOML>
